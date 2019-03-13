@@ -1,0 +1,4 @@
+
+
+class BotMessage:
+    hi = "hi"
