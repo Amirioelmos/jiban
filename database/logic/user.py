@@ -36,3 +36,13 @@ def update_user(chat_id, name):
     except Exception as e:
         session.rollback()
         jiban_logger.info("Update user fail, {}, by {}".format(chat_id, e))
+
+
+def get_user_name(chat_id):
+    try:
+        name = session.query(User.name).filter(User.chat_id == chat_id).first()
+        if name:
+            return name[0]
+    except Exception as e:
+        session.rollback()
+        jiban_logger.info("Fail to load name of : {}".format(chat_id))

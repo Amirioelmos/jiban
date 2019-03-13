@@ -1,7 +1,7 @@
 from telegram.ext import CommandHandler, MessageHandler, Filters, ConversationHandler, RegexHandler
 
 from bot import start, echo, error, get_name, choose_service, take_name, take_cash_name, \
-    take_cash_amount, save_cash, help_me
+    take_cash_amount, save_cash, help_me, create_account_final, new_account
 from constants.button import BotButton
 
 
@@ -20,7 +20,10 @@ def handlers_manager(dp):
             4: [MessageHandler(Filters.text, callback=take_cash_name, pass_user_data=True)],
             6: [MessageHandler(Filters.text, callback=take_cash_amount, pass_user_data=True)],
             7: [MessageHandler(Filters.text, callback=save_cash, pass_user_data=True)],
-            8: [MessageHandler(Filters.text, callback=help_me, pass_user_data=True)]
+            8: [MessageHandler(Filters.text, callback=create_account_final, pass_user_data=True)],
+            9: [RegexHandler(pattern="^{}$".format(BotButton.new_account), callback=new_account, pass_user_data=True),
+                RegexHandler(pattern="^{}$".format(BotButton.new_cost), callback=help_me, pass_user_data=True)
+                ]
             # PHOTO: [MessageHandler(Filters.photo, photo),
             #         CommandHandler('skip', skip_photo)],
             #
