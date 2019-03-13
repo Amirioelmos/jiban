@@ -1,0 +1,5 @@
+cffi == 1.12.2
+python-telegram-bot == 11.1.0
+persian == 0.4.0
+sqlalchemy == 1.2.9
+jdatetime == 2.1.0

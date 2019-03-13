@@ -1,5 +1,5 @@
 from handlers_manager import handlers_manager
-from jiban_main import updater, dp
+from bot import updater, dp
 from utils.config import JibanConfig
 
 

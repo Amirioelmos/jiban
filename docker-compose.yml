@@ -1,0 +1,28 @@
+version: '3'
+services:
+  pg_jiban_bot:
+    image: registry.bale.ai:2443/balepostgres:1.4.0
+    container_name: pg_jiban_bot
+    environment:
+      - POSTGRES_USER=jiban_bot
+      - POSTGRES_PASSWORD=sdhglgslahglaskjdfsfglashg@lsakjgs1231
+      - POSTGRES_DB=jiban_bot
+      - TZ=Asia/Tehran
+    ports:
+      - 54111:5432
+    volumes:
+      - /home/elenoon/docker/volumes/pg_jiban_bot/postgres/:/var/lib/postgresql/data/
+
+  vip_bot:
+    image: docker.bale.ai/bank/jiban:0.0-1
+    container_name: jiban_bot
+    restart: always
+    environment:
+      - BASE_URL=https://tapi.bale.ai/
+      - TOKEN=1892937244:a7938e8e605121bfb26cb8b953f4a6304551d6cc
+      - SYSTEM_LOCAL=fa_IR
+      - POSTGRES_USER=jiban_bot
+      - POSTGRES_PASSWORD=sdhglgslahglaskjdfsfglashg@lsakjgs1231
+      - POSTGRES_DB=jiban_db
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=pg_jiban_bot

@@ -1,13 +1,7 @@
+from telegram import ReplyKeyboardMarkup
+from telegram.ext import Updater
 
-
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-
-# Enable logging
-
-
-
-# Define a few command handlers. These usually take the two arguments bot and
-# update. Error handlers also receive the raised TelegramError object in error.
+from constants.button import BotButton
 from constants.messages import BotMessage
 from utils.common import jiban_logger
 from utils.config import JibanConfig
@@ -18,8 +12,13 @@ dp = updater.dispatcher
 
 
 def start(bot, update):
+    reply_keyboard = [[BotButton.starter]]
     """Send a message when the command /start is issued."""
-    update.message.reply_text(BotMessage.hi)
+    update.message.reply_text(BotMessage.starter_message,
+                              reply_markup=
+                              ReplyKeyboardMarkup(
+                                  reply_keyboard,
+                                  one_time_keyboard=True))
 
 
 def help(bot, update):
