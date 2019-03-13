@@ -1,13 +1,16 @@
+import json
+
 import persian
 
 from database.logic.bank_account import add_bank_account, update_bank_account
 from database.logic.cash_account import add_cash_account
-from telegram import ReplyKeyboardMarkup
+from telegram import ReplyKeyboardMarkup, LabeledPrice
 from telegram.ext import Updater, ConversationHandler
 
 from constants.button import BotButton
 from constants.messages import BotMessage
-from database.logic.user import is_user, add_user, update_user, get_user_name
+from database.logic.user import is_user, add_user, update_user, get_user_name, check_payed_user, number_of_account, \
+    set_user_payed
 from utils.common import jiban_logger, _get_chat_id, _get_message, UserData, _formatter
 from utils.config import JibanConfig
 
@@ -73,7 +76,62 @@ def new_account(bot, update, user_data):
     chat_id = _get_chat_id(update)
     name = get_user_name(chat_id)
     reply_keyboard = [[BotButton.account, BotButton.cash]]
-    text = BotMessage.choose_service.format(name=name)
+    is_user_payed = check_payed_user(chat_id)
+    number_of_account_for_user = number_of_account(chat_id)
+    if number_of_account_for_user < 3:
+        text = BotMessage.choose_service.format(name=name)
+        bot.send_message(
+            chat_id=chat_id,
+            text=text,
+            reply_markup=
+            ReplyKeyboardMarkup(
+                reply_keyboard,
+                one_time_keyboard=True))
+        return 3
+    else:
+        if is_user_payed:
+            text = BotMessage.choose_service.format(name=name)
+            bot.send_message(
+                chat_id=chat_id,
+                text=text,
+                reply_markup=
+                ReplyKeyboardMarkup(
+                    reply_keyboard,
+                    one_time_keyboard=True))
+            return 3
+        else:
+            user_name = get_user_name(chat_id)
+            text = BotMessage.please_pay_for_continue.format(name=user_name)
+            reply_keyboard = [[BotButton.pay, BotButton.main_menu]]
+            bot.send_message(
+                chat_id=chat_id,
+                text=text,
+                reply_markup=
+                ReplyKeyboardMarkup(
+                    reply_keyboard,
+                    one_time_keyboard=True))
+            return 14
+
+def pay_full_bot(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    bot.send_invoice(chat_id=chat_id,
+                     title=BotMessage.invoice_text,
+                     description=BotMessage.invoice_description,
+                     payload="payload",
+                     provider_token=JibanConfig.cart_number,
+                     start_parameter="",
+                     currency="IRR",
+                     prices=[LabeledPrice(BotMessage.invoice_labale, int(1))])
+    return 15
+
+def pay_full_done(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    successful_payment = update.message.successful_payment
+    jiban_logger.info("SuccessfulPayment with payload: %s", successful_payment.invoice_payload)
+    invoice_payload = json.loads(successful_payment.invoice_payload)
+    set_user_payed(chat_id)
+    text = BotMessage.thanks_for_payed
+    reply_keyboard = [[BotButton.main_menu]]
     bot.send_message(
         chat_id=chat_id,
         text=text,
@@ -81,7 +139,13 @@ def new_account(bot, update, user_data):
         ReplyKeyboardMarkup(
             reply_keyboard,
             one_time_keyboard=True))
-    return 3
+
+    return 0
+
+
+def thanks_for_payment(bot, update, user_data):
+        update.message.reply_text('Help!')
+
 
 
 def choose_service(bot, update, user_data):

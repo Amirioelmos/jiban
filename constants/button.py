@@ -1,4 +1,5 @@
 class BotButton:
+    pay = "خرید نسخه کامل بازو"
     add_account_name = "میخوام براش یه اسم انتخاب کنم"
     add_account_number = "شماره حسابش رو هم اضافه میکنم"
     main_menu = "منوی اصلی"

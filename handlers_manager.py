@@ -3,7 +3,8 @@ from telegram.ext import CommandHandler, MessageHandler, Filters, ConversationHa
 from bot import start, echo, error, get_name, choose_service, take_name, take_cash_name, \
     take_cash_amount, save_cash_account, help_me, create_account_final, new_account, take_bank_name_for_account, \
     take_remain_of_bank_account, take_cart_number_of_bank_account, save_bank_account, \
-    get_account_number_of_bank_account, take_account_number_of_bank_account
+    get_account_number_of_bank_account, take_account_number_of_bank_account, pay_full_bot, pay_full_done, \
+    thanks_for_payment
 from constants.button import BotButton
 
 
@@ -13,7 +14,10 @@ def handlers_manager(dp):
     # dp.add_handler(MessageHandler(Filters.text, echo))
     dp.add_error_handler(error)
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
+        entry_points=[
+            CommandHandler('start', start),
+            RegexHandler(pattern=".*", callback=start)
+        ],
 
         states={
             1: [RegexHandler("^{}$".format(BotButton.starter), get_name)],
@@ -43,6 +47,12 @@ def handlers_manager(dp):
                              pass_user_data=True)
                 ],
             13: [MessageHandler(Filters.text, callback=take_account_number_of_bank_account, pass_user_data=True)],
+            14: [MessageHandler(Filters.text, callback=pay_full_bot, pass_user_data=True)],
+            15: [
+                MessageHandler(Filters.successful_payment, callback=pay_full_done, pass_user_data=True),
+                RegexHandler(pattern=".*", callback=start)
+            ],
+            16: [MessageHandler(Filters.text, callback=thanks_for_payment, pass_user_data=True)],
 
             # PHOTO: [MessageHandler(Filters.photo, photo),
             #         CommandHandler('skip', skip_photo)],
@@ -51,6 +61,8 @@ def handlers_manager(dp):
             #            CommandHandler('skip', skip_location)],
             #
             # BIO: [MessageHandler(Filters.text, bio)]
+            0: [RegexHandler(".*", start)],
+
         },
 
         fallbacks=[CommandHandler('cancel', echo)]
