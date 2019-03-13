@@ -6,14 +6,14 @@ services:
     environment:
       - POSTGRES_USER=jiban_bot
       - POSTGRES_PASSWORD=sdhglgslahglaskjdfsfglashg@lsakjgs1231
-      - POSTGRES_DB=jiban_bot
+      - POSTGRES_DB=jiban_db
       - TZ=Asia/Tehran
     ports:
       - 54111:5432
     volumes:
       - /home/elenoon/docker/volumes/pg_jiban_bot/postgres/:/var/lib/postgresql/data/
 
-  vip_bot:
+  jiban_bot:
     image: docker.bale.ai/bank/jiban:0.0-1
     container_name: jiban_bot
     restart: always
