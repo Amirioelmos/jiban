@@ -85,3 +85,19 @@ def set_user_payed(chat_id):
     except Exception as e:
         session.rollback()
         jiban_logger.info("Fail to set user payed : {}\n for {}".format(chat_id, e))
+
+
+def get_accounts_of_user(chat_id):
+    account_list = []
+    try:
+        bank_accounts = session.query(BankAccount).filter(BankAccount.chat_id == chat_id).all()
+        cash_accounts = session.query(CashAccount).filter(CashAccount.chat_id == chat_id).all()
+        if bank_accounts:
+            account_list += bank_accounts
+        if cash_accounts:
+            account_list += cash_accounts
+        return account_list
+    except Exception as e:
+        session.rollback()
+        jiban_logger.info("fail to load all accounts : {}".format(e))
+        return account_list

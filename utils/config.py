@@ -2,6 +2,7 @@ import os
 
 
 class JibanConfig:
+    pay_amount = int(os.getenv("PAY_AMOUNT", 1))
     cart_number = os.getenv("CART_NUMBER", "6037997164929672")
     db_user = os.environ.get('POSTGRES_USER', None)
     db_password = os.environ.get('POSTGRES_PASSWORD', None)

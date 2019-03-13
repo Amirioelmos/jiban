@@ -10,7 +10,7 @@ from telegram.ext import Updater, ConversationHandler
 from constants.button import BotButton
 from constants.messages import BotMessage
 from database.logic.user import is_user, add_user, update_user, get_user_name, check_payed_user, number_of_account, \
-    set_user_payed
+    set_user_payed, get_accounts_of_user
 from utils.common import jiban_logger, _get_chat_id, _get_message, UserData, _formatter
 from utils.config import JibanConfig
 
@@ -112,6 +112,7 @@ def new_account(bot, update, user_data):
                     one_time_keyboard=True))
             return 14
 
+
 def pay_full_bot(bot, update, user_data):
     chat_id = _get_chat_id(update)
     bot.send_invoice(chat_id=chat_id,
@@ -121,8 +122,13 @@ def pay_full_bot(bot, update, user_data):
                      provider_token=JibanConfig.cart_number,
                      start_parameter="",
                      currency="IRR",
-                     prices=[LabeledPrice(BotMessage.invoice_labale, int(1))])
+                     prices=
+                     [LabeledPrice(
+                         BotMessage.invoice_labale,
+                         JibanConfig.pay_amount
+                     )])
     return 15
+
 
 def pay_full_done(bot, update, user_data):
     chat_id = _get_chat_id(update)
@@ -141,10 +147,6 @@ def pay_full_done(bot, update, user_data):
             one_time_keyboard=True))
 
     return 0
-
-
-def thanks_for_payment(bot, update, user_data):
-        update.message.reply_text('Help!')
 
 
 
@@ -360,6 +362,111 @@ def take_account_number_of_bank_account(bot, update, user_data):
     return 12
 
 
+def new_income_and_expenses(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    name = get_user_name(chat_id)
+    text = BotMessage.new_cost.format(name=name)
+    reply_keyboard = [[
+        BotButton.cost,
+        BotButton.receive,
+        BotButton.p2p,
+        BotButton.auto_understand_transactions,
+    ]]
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 16
+
+
+def new_cost(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    name = get_user_name(chat_id)
+    text = BotMessage.choose_cost_category
+    reply_keyboard = [[
+        BotButton.edu,
+        BotButton.fun,
+        BotButton.family,
+        BotButton.charge,
+    ]]
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 17
+
+
+def take_cost_type(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    message = _get_message(update)
+    user_data[UserData.cost_type] = message
+    text = BotMessage.enter_amount_of_cost
+    bot.send_message(chat_id=chat_id, text=text)
+    return 18
+
+def take_cost_amount(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    message = _get_message(update)
+    user_data[UserData.cost_amount] = message
+    text = BotMessage.enter_date_of_cost
+    bot.send_message(chat_id=chat_id, text=text)
+    return 19
+
+def take_cost_date(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    message = _get_message(update)
+    user_data[UserData.cost_date] = message
+    text = BotMessage.enter_account_of_cost
+    all_accounts = get_accounts_of_user(chat_id)
+    account_info = []
+    if all_accounts:
+        jiban_logger.info("\n\n\n Accounts : {}".format(all_accounts))
+        for account in all_accounts:
+            account_info.append(str(account.id))
+    reply_keyboard = [account_info]
+    jiban_logger.info("reply_keyboard : {}".format(reply_keyboard))
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 20
+
+
+def take_cost_account(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    message = _get_message(update)
+    name = get_user_name(chat_id)
+    user_data[UserData.cost_account] = message
+    cost_type = user_data[UserData.cost_type]
+    amount = user_data[UserData.cost_amount]
+    text = BotMessage.cost_saved.format(
+        name=name,
+        cost_type=cost_type,
+        amount=amount,
+        account=message
+    )
+
+    bot.send_message(chat_id=chat_id, text=text)
+
+def new_receive(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    name = get_user_name(chat_id)
+    bot.send_message(text="new_receive {}".format(name), chat_id=chat_id)
+
+
+def new_p2p(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    name = get_user_name(chat_id)
+    bot.send_message(text="new_p2p {}".format(name), chat_id=chat_id)
+
+
+def new_auto_understand_transactions(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    name = get_user_name(chat_id)
+    bot.send_message(text="new_auto_understand_transactions {}".format(name), chat_id=chat_id)
 
 def starter_checker(bot, update):
     message = _get_message(update)
@@ -376,7 +483,6 @@ def echo(bot, update):
     """Echo the user message."""
     update.message.reply_text(update.message.text)
     return ConversationHandler.END
-
 
 
 def error(bot, update):

@@ -1,4 +1,12 @@
 class BotButton:
+    charge = "پرداخت قبض و شارژ"
+    family = "خانواده"
+    fun = "سرگرمی"
+    edu = "آموزش"
+    auto_understand_transactions = "تشخیص خودکار تراکنش ها"
+    p2p = "جیب به جیب"
+    receive = "دریافت"
+    cost = "هزینه"
     pay = "خرید نسخه کامل بازو"
     add_account_name = "میخوام براش یه اسم انتخاب کنم"
     add_account_number = "شماره حسابش رو هم اضافه میکنم"
