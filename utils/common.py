@@ -23,6 +23,10 @@ def _formatter(_id):
         return _id
 
 class UserData:
+    back_account_account_number = "back_account_account_number"
+    back_account_cart_number = "back_account_cart_number"
+    bank_account_remain = "bank_account_remain"
+    bank_name = "bank_name"
     cash_amount = "cash_amount"
     cash_name = "cash_name"
     account_type = "account_type"

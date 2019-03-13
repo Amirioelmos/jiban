@@ -1,6 +1,13 @@
 
 
 class BotMessage:
+    new_bank_account_done_by_account_number = """حساب {bank_name} به شماره کارت {cart_number} و شماره حساب{account_number} و با میزان موجودی {remain} ریال به حساب های شما اضافه بشه ؟"""
+    enter_account_number = "لطفا شماره حساب مربوط به این حسابت رو وارد کن:"
+    new_bank_account_done = """یه خبر خوب! حساب {bank_name} شما به فهرست حساب های شما اضافه شد.
+حالا میتونی به صفحه اصلی بازو بری یا یه حساب دیگه اضافه کنی."""
+    accept_to_add_bank_account = "حساب {bank_name} به شماره کارت {cart_number} و با میزان موجودی {remain} ریال به حساب های شما اضافه بشه ؟"
+    enter_cart_number_of_bank_account = "لطفا شماره کارت مربوط به این حسابت رو وارد کن:"
+    enter_remain_of_bank_account = "*مقدار موجودی* حسابت رو به *ریال* و به صورت *عدد* وارد کن:"
     choose_bank_of_account = "لطفا بانک حساب خود را وارد کنید"
     new_cash_account_done = """یه خبر خوب! حساب *{name}* به فهرست حساب های شما اضافه شد.
 حالا میتونی به صفحه اصلی بازو بری *یا* یه حساب دیگه اضافه کنی."""

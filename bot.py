@@ -1,5 +1,6 @@
 import persian
 
+from database.logic.bank_account import add_bank_account, update_bank_account
 from database.logic.cash_account import add_cash_account
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import Updater, ConversationHandler
@@ -142,7 +143,7 @@ def take_cash_amount(bot, update, user_data):
     return 7
 
 
-def save_cash(bot, update, user_data):
+def save_cash_account(bot, update, user_data):
     name = user_data[UserData.cash_name]
     amount = user_data[UserData.cash_amount]
     chat_id = _get_chat_id(update)
@@ -176,6 +177,130 @@ def create_account_final(bot, update, user_data):
 #
 # def take_cash_amount(bot, update, user_data):
 #     update.message.reply_text('Help!')
+
+
+def take_bank_name_for_account(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    message = _get_message(update)
+    user_data[UserData.bank_name] = message
+    text = BotMessage.enter_remain_of_bank_account
+    reply_keyboard = [[BotButton.main_menu]]
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 10
+
+
+def take_remain_of_bank_account(bot, update, user_data):
+    message = _get_message(update)
+    chat_id = _get_chat_id(update)
+    starter_checker(bot, update)
+    user_data[UserData.bank_account_remain] = message
+    text = BotMessage.enter_cart_number_of_bank_account
+    reply_keyboard = [[BotButton.main_menu]]
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 11
+
+
+def take_cart_number_of_bank_account(bot, update, user_data):
+    message = _get_message(update)
+    chat_id = _get_chat_id(update)
+    starter_checker(bot, update)
+    user_data[UserData.back_account_cart_number] = message
+    bank_name = user_data[UserData.bank_name]
+    remain = user_data[UserData.bank_account_remain]
+    remain = _formatter(int(remain))
+    message = persian.convert_en_numbers(message)
+    text = BotMessage.accept_to_add_bank_account.format(bank_name=bank_name,
+                                                        remain=remain,
+                                                        cart_number=message)
+    reply_keyboard = [[
+        BotButton.yes_add,
+        BotButton.add_account_number,
+        BotButton.add_account_name,
+        BotButton.no_change_it,
+                       ]]
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 12
+
+
+def save_bank_account(bot, update, user_data):
+    message = _get_message(update)
+    chat_id = _get_chat_id(update)
+    starter_checker(bot, update)
+    bank_name = user_data[UserData.bank_name]
+    remain = user_data[UserData.bank_account_remain]
+    cart_number = user_data[UserData.back_account_cart_number]
+    add_bank_account(chat_id, bank_name, remain, cart_number)
+    account_number = None
+    try:
+        account_number = user_data[UserData.back_account_account_number]
+    except Exception as e:
+        pass
+    if account_number:
+        update_bank_account(chat_id, cart_number, "account_number", account_number)
+    text = BotMessage.new_bank_account_done.format(bank_name=bank_name)
+    reply_keyboard = [[BotButton.main_menu, BotButton.new_account]]
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 8
+
+
+def get_account_number_of_bank_account(bot, update, user_data):
+    text = BotMessage.enter_account_number
+    chat_id = _get_chat_id(update)
+    reply_keyboard = [[BotButton.main_menu]]
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 13
+
+
+def take_account_number_of_bank_account(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    message = _get_message(update)
+    user_data[UserData.back_account_account_number] = message
+    reply_keyboard = [[
+        BotButton.yes_add,
+        BotButton.add_account_name,
+        BotButton.no_change_it,
+    ]]
+    bank_name = user_data[UserData.bank_name]
+    cart_number = user_data[UserData.back_account_cart_number]
+    remain = user_data[UserData.bank_account_remain]
+    text = BotMessage.new_bank_account_done_by_account_number.format(
+        bank_name=bank_name,
+        cart_number=cart_number,
+        remain=remain,
+        account_number=message)
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 12
+
+
+
+def starter_checker(bot, update):
+    message = _get_message(update)
+    if message == BotButton.main_menu:
+        return start(bot, update)
 
 
 def help_me(bot, update, user_data):
