@@ -25,3 +25,14 @@ def is_user(chat_id):
         session.rollback()
         jiban_logger.info("Fail to load user : {}, {}".format(chat_id, e))
     return is_user_flag
+
+
+def update_user(chat_id, name):
+    try:
+        user = session.query(User).filter(User.chat_id == chat_id).first()
+        user.name = name
+        session.commit()
+        jiban_logger.info("Update user : {}, name: {}".format(chat_id, name))
+    except Exception as e:
+        session.rollback()
+        jiban_logger.info("Update user fail, {}, by {}".format(chat_id, e))

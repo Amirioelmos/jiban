@@ -1,4 +1,9 @@
 class BotButton:
+    main_menu = "منوی اصلی"
+    no_change_it = "نه صبر کن! تغییرش میدم"
+    yes_add = "بله، اضافه بشه"
+    cash = "پول نقد"
+    account = "حساب بانکی"
     financial_budgeting = "بودجه بندی مالی"
     financial_report = "گزارش مالی"
     account_list = "لیست حساب ها"
