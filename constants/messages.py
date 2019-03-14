@@ -1,9 +1,13 @@
 
 
 class BotMessage:
-    cost_saved = " *{name}* عزیز، هزینه از دسته بندی *{cost_type}* به مبلغ *{amount}* با موفقیت ثبت شد."
+    enter_amount_of_receive = "میزان *مبلغ دریافتی* رو به ریال وارد کن:"
+    cost_saved = " *{name}*  عزیز، هزینه از دسته بندی  *{cost_type}* به مبلغ *{amount}* با موفقیت ثبت شد."
+    receive_saved = " *{name}*   عزیز، دریافتی از دسته بندی *{receive_type}* به مبلغ *{amount}* با موفقیت ثبت شد."
     enter_account_of_cost = "لطفا حساب مبدا رو از لیست انتخاب کن:"
     enter_date_of_cost = "لطفا *تاریخ*  این هزینه رو مشخص کن:" \
+                         "مثال:۹۷۱۲۱۳"
+    enter_date_of_receive = "لطفا *تاریخ*  این دریافت رو مشخص کن:" \
                          "مثال:۹۷۱۲۱۳"
     enter_amount_of_cost = "میزان *مبلغ پرداختی* رو به ریال وارد کن:"
     choose_cost_category = "از بین موارد زیر، دسته بندی مربوط رو انتخاب کن" \

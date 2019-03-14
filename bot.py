@@ -473,8 +473,90 @@ def take_cost_account(bot, update, user_data):
 
 def new_receive(bot, update, user_data):
     chat_id = _get_chat_id(update)
+    text = BotMessage.choose_cost_category
+    reply_keyboard = [[
+        BotButton.salary,
+        BotButton.sell,
+        BotButton.profitable_investment,
+        BotButton.gifts_and_rewards,
+    ]]
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 21
+
+
+def take_receive_type(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    message = _get_message(update)
+    user_data[UserData.receive_type] = message
+    text = BotMessage.enter_amount_of_receive
+    bot.send_message(chat_id=chat_id, text=text)
+    return 22
+
+
+def take_receive_amount(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    message = _get_message(update)
+    user_data[UserData.receive_amount] = message
+    text = BotMessage.enter_date_of_receive
+    bot.send_message(chat_id=chat_id, text=text)
+    return 23
+
+
+def take_receive_date(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    message = _get_message(update)
+    user_data[UserData.receive_date] = message
+    text = BotMessage.enter_account_of_cost
+    all_accounts = get_accounts_of_user(chat_id)
+    user_data[UserData.all_accounts] = all_accounts
+    account_info = []
+    if all_accounts:
+        for account in all_accounts:
+            if isinstance(account, BankAccount):
+                item = str(all_accounts.index(account)) + " " + MiniText.banki
+            else:
+                item = str(all_accounts.index(account)) + " " + MiniText.cash
+            account_info.append(item)
+    account_info.append(BotButton.main_menu)
+    reply_keyboard = [account_info]
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 24
+
+def take_receive_account(bot, update, user_data):
+    chat_id = _get_chat_id(update)
+    account_info = _get_message(update).split(" ")
+    account_id = account_info[0]
+    account = user_data[UserData.all_accounts][int(account_id)]
     name = get_user_name(chat_id)
-    bot.send_message(text="new_receive {}".format(name), chat_id=chat_id)
+    user_data[UserData.receive_date_account] = account.id
+    cost_type = user_data[UserData.receive_type]
+    amount = user_data[UserData.receive_amount]
+    add_income_and_expenses(chat_id=chat_id,
+                            account=account,
+                            type=cost_type,
+                            kind=IEText.withdraw,
+                            amount=amount)
+    text = BotMessage.receive_saved.format(
+        name=name,
+        receive_type=cost_type,
+        amount=_formatter(int(amount)),
+    )
+    reply_keyboard = [[BotButton.main_menu]]
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 0
+
 
 
 def new_p2p(bot, update, user_data):

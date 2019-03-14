@@ -1,4 +1,8 @@
 class BotButton:
+    gifts_and_rewards = "هدیه و پاداش"
+    profitable_investment = "سود سرمایه گذاری"
+    sell = "فروش"
+    salary = "حقوق"
     charge = "پرداخت قبض و شارژ"
     family = "خانواده"
     fun = "سرگرمی"

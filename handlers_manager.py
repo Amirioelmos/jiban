@@ -116,6 +116,23 @@ def handlers_manager(dp):
                 MessageHandler(Filters.text, callback=take_cost_account, pass_user_data=True),
                 common_handler
             ],
+
+            21: [
+                MessageHandler(Filters.text, callback=take_receive_type, pass_user_data=True),
+                common_handler
+            ],
+            22: [
+                MessageHandler(Filters.text, callback=take_receive_amount, pass_user_data=True),
+                common_handler
+            ],
+            23: [
+                MessageHandler(Filters.text, callback=take_receive_date, pass_user_data=True),
+                common_handler
+            ],
+            24: [
+                MessageHandler(Filters.text, callback=take_receive_account, pass_user_data=True),
+                common_handler
+            ],
             # PHOTO: [MessageHandler(Filters.photo, photo),
             #         CommandHandler('skip', skip_photo)],
             #

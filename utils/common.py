@@ -23,6 +23,10 @@ def _formatter(_id):
         return _id
 
 class UserData:
+    receive_date_account = "receive_date_account"
+    receive_date = "receive_date"
+    receive_amount = "receive_amount"
+    receive_type = "receive_type"
     all_accounts = "all_account"
     cost_account = "cost_account"
     cost_date = "cost_date"
