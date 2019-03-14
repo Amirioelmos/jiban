@@ -11,10 +11,10 @@ class CashAccount(Base):
     id = Column(Integer, primary_key=True)
     chat_id = Column(Integer)
     name = Column(String)
-    amount = Column(Integer)
+    remain = Column(Integer)
     description = Column(String)
 
-    def __init__(self, chat_id, name, amount):
+    def __init__(self, chat_id, name, remain):
         self.chat_id = chat_id
         self.name = name
-        self.amount = amount
+        self.remain = remain

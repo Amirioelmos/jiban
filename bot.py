@@ -4,11 +4,14 @@ import persian
 
 from database.logic.bank_account import add_bank_account, update_bank_account
 from database.logic.cash_account import add_cash_account
+from database.logic.income_and_expenses import add_income_and_expenses
+from database.model.bank_account import BankAccount
+from database.model.income_and_expenses import IEText
 from telegram import ReplyKeyboardMarkup, LabeledPrice
 from telegram.ext import Updater, ConversationHandler
 
 from constants.button import BotButton
-from constants.messages import BotMessage
+from constants.messages import BotMessage, MiniText
 from database.logic.user import is_user, add_user, update_user, get_user_name, check_payed_user, number_of_account, \
     set_user_payed, get_accounts_of_user
 from utils.common import jiban_logger, _get_chat_id, _get_message, UserData, _formatter
@@ -382,7 +385,6 @@ def new_income_and_expenses(bot, update, user_data):
 
 def new_cost(bot, update, user_data):
     chat_id = _get_chat_id(update)
-    name = get_user_name(chat_id)
     text = BotMessage.choose_cost_category
     reply_keyboard = [[
         BotButton.edu,
@@ -406,6 +408,7 @@ def take_cost_type(bot, update, user_data):
     bot.send_message(chat_id=chat_id, text=text)
     return 18
 
+
 def take_cost_amount(bot, update, user_data):
     chat_id = _get_chat_id(update)
     message = _get_message(update)
@@ -414,19 +417,24 @@ def take_cost_amount(bot, update, user_data):
     bot.send_message(chat_id=chat_id, text=text)
     return 19
 
+
 def take_cost_date(bot, update, user_data):
     chat_id = _get_chat_id(update)
     message = _get_message(update)
     user_data[UserData.cost_date] = message
     text = BotMessage.enter_account_of_cost
     all_accounts = get_accounts_of_user(chat_id)
+    user_data[UserData.all_accounts] = all_accounts
     account_info = []
     if all_accounts:
-        jiban_logger.info("\n\n\n Accounts : {}".format(all_accounts))
         for account in all_accounts:
-            account_info.append(str(account.id))
+            if isinstance(account, BankAccount):
+                item = str(all_accounts.index(account)) + " " + MiniText.banki
+            else:
+                item = str(all_accounts.index(account)) + " " + MiniText.cash
+            account_info.append(item)
+    account_info.append(BotButton.main_menu)
     reply_keyboard = [account_info]
-    jiban_logger.info("reply_keyboard : {}".format(reply_keyboard))
     bot.send_message(chat_id=chat_id,
                      text=text,
                      reply_markup=ReplyKeyboardMarkup(
@@ -437,19 +445,31 @@ def take_cost_date(bot, update, user_data):
 
 def take_cost_account(bot, update, user_data):
     chat_id = _get_chat_id(update)
-    message = _get_message(update)
+    account_info = _get_message(update).split(" ")
+    account_id = account_info[0]
+    account = user_data[UserData.all_accounts][int(account_id)]
     name = get_user_name(chat_id)
-    user_data[UserData.cost_account] = message
+    user_data[UserData.cost_account] = account.id
     cost_type = user_data[UserData.cost_type]
     amount = user_data[UserData.cost_amount]
+    add_income_and_expenses(chat_id=chat_id,
+                            account=account,
+                            type=cost_type,
+                            kind=IEText.deposit,
+                            amount=amount)
     text = BotMessage.cost_saved.format(
         name=name,
         cost_type=cost_type,
-        amount=amount,
-        account=message
+        amount=_formatter(int(amount)),
     )
+    reply_keyboard = [[BotButton.main_menu]]
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 0
 
-    bot.send_message(chat_id=chat_id, text=text)
 
 def new_receive(bot, update, user_data):
     chat_id = _get_chat_id(update)
