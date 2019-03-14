@@ -10,17 +10,25 @@ class BotMessage:
 میتونه به عنوان دخل و خرج جدید ثبت بشه.
 #تشخیص_خودکار
 """
+
     get_me_spata_message = "پیام ساپتا یا رسید تراکنش را برای من فوروارد کن:"
     enter_amount_of_receive = "میزان *مبلغ دریافتی* رو به ریال وارد کن:"
-    cost_saved = " *{name}*  عزیز، هزینه از دسته بندی  *{cost_type}* به مبلغ *{amount}* با موفقیت ثبت شد."
-    receive_saved = " *{name}*   عزیز، دریافتی از دسته بندی *{receive_type}* به مبلغ *{amount}* با موفقیت ثبت شد."
+    cost_saved = " *{name}*  عزیز، هزینه از حساب *{account_name}* بابت  *{cost_type}* به مبلغ *{amount}* " \
+                 "با موفقیت ثبت شد.\n" \
+                 "*باقیمانده حساب:* {account_name} - {remain} ریال" \
 
+    # receive_saved = " *{name}*   عزیز، دریافت مبلغ  از دسته بندی *{receive_type}* به مبلغ *{amount}* " \
+    #                 "با موفقیت ثبت شد."
+    receive_saved ="""{name} عزیز، دریافت مبلغ *{amount}* ریال بابت *{receive_type}* به حساب *{account_name}* با موفقیت ثبت شد.
+باقیمانده حساب : *{remain}* ریال
+"""
     sapta_saved = """{name} عزیز،
 #{ie_type}
 از دسته بندی: *{transaction_type}*
 به مبلغ: *{amount} ریال*
 در حساب: #{account_number}
-با موفقیت ثبت شد."""
+با موفقیت ثبت شد.
+*باقیمانده حساب:* {account_name} - {remain} ریال"""
     enter_account_of_cost = "لطفا حساب مبدا رو از لیست انتخاب کن:"
     enter_date_of_cost = "لطفا *تاریخ*  این هزینه رو مشخص کن:" \
                          "مثال:۹۷۱۲۱۳"
@@ -28,7 +36,7 @@ class BotMessage:
                          "مثال:۹۷۱۲۱۳"
     enter_amount_of_cost = "میزان *مبلغ پرداختی* رو به ریال وارد کن:"
     choose_cost_category = "از بین موارد زیر، دسته بندی مربوط رو انتخاب کن" \
-                           "همچنین میتوانید نام دلخواه خود را وارد نمایید:"
+                           " همچنین میتوانید نام دلخواه خود را وارد نمایید:"
     new_cost = """*{name}* عزیز، لطفا نوع دخل و خرج رو انتخاب کن"""
     thanks_for_payed = "شما به کاربر ویژه بازوی جیبان تبدیل شدید. برید حالشو ببرید."
     invoice_labale = 'نسخه کامل'
@@ -62,5 +70,5 @@ class MiniText:
 
     user = "کاربر"
     bank_melli = "بانک ملّی ایران"
-    cash = "حساب نقدی"
+    cash = "نقدی"
     banki = "حساب بانکی"

@@ -62,10 +62,10 @@ def get_name(bot, update, user_data):
     reply_keyboard = [[BotButton.main_menu]]
     text = BotMessage.enter_name
     bot.send_message(chat_id=chat_id, text=text,
-            reply_markup=
-            ReplyKeyboardMarkup(
-                reply_keyboard,
-                one_time_keyboard=True))
+                     reply_markup=
+                     ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
     return 2
 
 
@@ -166,7 +166,6 @@ def pay_full_done(bot, update, user_data):
     return 0
 
 
-
 def choose_service(bot, update, user_data):
     starter_checker(bot, update, user_data)
     jiban_logger.info("\n\nchoose_service\n\n")
@@ -240,8 +239,8 @@ def save_cash_account(bot, update, user_data):
     bot.send_message(chat_id=chat_id,
                      text=text,
                      reply_markup=ReplyKeyboardMarkup(
-                        reply_keyboard,
-                        one_time_keyboard=True))
+                         reply_keyboard,
+                         one_time_keyboard=True))
     return 8
 
 
@@ -252,8 +251,6 @@ def create_account_final(bot, update, user_data):
         return start(bot, update, user_data)
     if message == BotButton.new_account:
         return new_account(bot, update, user_data)
-
-
 
 
 def take_bank_name_for_account(bot, update, user_data):
@@ -304,7 +301,7 @@ def take_cart_number_of_bank_account(bot, update, user_data):
         BotButton.add_account_number,
         BotButton.add_account_name,
         BotButton.no_change_it,
-                       ]]
+    ]]
     bot.send_message(chat_id=chat_id,
                      text=text,
                      reply_markup=ReplyKeyboardMarkup(
@@ -418,9 +415,14 @@ def take_cost_type(bot, update, user_data):
     starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     message = _get_message(update)
+    reply_keyboard = [[BotButton.main_menu]]
     user_data[UserData.cost_type] = message
     text = BotMessage.enter_amount_of_cost
-    bot.send_message(chat_id=chat_id, text=text)
+    bot.send_message(chat_id=chat_id, text=text,
+                     reply_markup=
+                     ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
     return 18
 
 
@@ -428,9 +430,14 @@ def take_cost_amount(bot, update, user_data):
     starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     message = _get_message(update)
+    reply_keyboard = [[BotButton.main_menu]]
     user_data[UserData.cost_amount] = message
     text = BotMessage.enter_date_of_cost
-    bot.send_message(chat_id=chat_id, text=text)
+    bot.send_message(chat_id=chat_id, text=text,
+                     reply_markup=
+                     ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
     return 19
 
 
@@ -446,7 +453,7 @@ def take_cost_date(bot, update, user_data):
     if all_accounts:
         for account in all_accounts:
             if isinstance(account, BankAccount):
-                item = str(all_accounts.index(account)) + " " + MiniText.banki
+                item = str(all_accounts.index(account)) + " " + account.bank_name
             else:
                 item = str(all_accounts.index(account)) + " " + MiniText.cash
             account_info.append(item)
@@ -467,6 +474,11 @@ def take_cost_account(bot, update, user_data):
     account_id = account_info[0]
     account = user_data[UserData.all_accounts][int(account_id)]
     name = get_user_name(chat_id)
+    if isinstance(account, BankAccount):
+        account_name = account.bank_name
+    else:
+        account_name = MiniText.cash
+
     user_data[UserData.cost_account] = account.id
     cost_type = user_data[UserData.cost_type]
     amount = user_data[UserData.cost_amount]
@@ -479,6 +491,8 @@ def take_cost_account(bot, update, user_data):
         name=name,
         cost_type=cost_type,
         amount=_formatter(int(amount)),
+        account_name=account_name,
+        remain=_formatter(account.remain)
     )
     reply_keyboard = [[BotButton.main_menu]]
     bot.send_message(chat_id=chat_id,
@@ -511,9 +525,14 @@ def take_receive_type(bot, update, user_data):
     starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     message = _get_message(update)
+    reply_keyboard = [[BotButton.main_menu]]
     user_data[UserData.receive_type] = message
     text = BotMessage.enter_amount_of_receive
-    bot.send_message(chat_id=chat_id, text=text)
+    bot.send_message(chat_id=chat_id, text=text,
+                     reply_markup=
+                     ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
     return 22
 
 
@@ -521,9 +540,14 @@ def take_receive_amount(bot, update, user_data):
     starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     message = _get_message(update)
+    reply_keyboard = [[BotButton.main_menu]]
     user_data[UserData.receive_amount] = message
     text = BotMessage.enter_date_of_receive
-    bot.send_message(chat_id=chat_id, text=text)
+    bot.send_message(chat_id=chat_id, text=text,
+                     reply_markup=
+                     ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
     return 23
 
 
@@ -539,7 +563,7 @@ def take_receive_date(bot, update, user_data):
     if all_accounts:
         for account in all_accounts:
             if isinstance(account, BankAccount):
-                item = str(all_accounts.index(account)) + " " + MiniText.banki
+                item = str(all_accounts.index(account)) + " " + account.bank_name
             else:
                 item = str(all_accounts.index(account)) + " " + MiniText.cash
             account_info.append(item)
@@ -563,6 +587,10 @@ def take_receive_account(bot, update, user_data):
     user_data[UserData.receive_date_account] = account.id
     cost_type = user_data[UserData.receive_type]
     amount = user_data[UserData.receive_amount]
+    if isinstance(account, BankAccount):
+        account_name = account.bank_name
+    else:
+        account_name = MiniText.cash
     add_income_and_expenses(chat_id=chat_id,
                             account=account,
                             type=cost_type,
@@ -572,6 +600,8 @@ def take_receive_account(bot, update, user_data):
         name=name,
         receive_type=cost_type,
         amount=_formatter(int(amount)),
+        account_name=account_name,
+        remain=_formatter(account.remain)
     )
     reply_keyboard = [[BotButton.main_menu]]
     bot.send_message(chat_id=chat_id,
@@ -708,6 +738,8 @@ def send_sapta_done(bot, update, user_data):
         transaction_type=transaction_type,
         account_number=persian.convert_en_numbers(sapta_account_number),
         amount=_formatter(int(transaction_amount)),
+        remain=_formatter(account.remain),
+        account_name=account.bank_name
     )
     reply_keyboard = [[BotButton.main_menu]]
     bot.send_message(chat_id=chat_id,
@@ -716,6 +748,7 @@ def send_sapta_done(bot, update, user_data):
                          reply_keyboard,
                          one_time_keyboard=True))
     return 0
+
 
 def starter_checker(bot, update, user_data):
     message = _get_message(update)
@@ -737,5 +770,3 @@ def echo(bot, update):
 def error(bot, update):
     """Log Errors caused by Updates."""
     jiban_logger.warning('Update "%s" caused error "%s"', update, update.message)
-
-
