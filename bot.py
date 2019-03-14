@@ -59,13 +59,9 @@ def start(bot, update, user_data):
 def get_name(bot, update, user_data):
     chat_id = _get_chat_id(update)
     starter_checker(bot, update, user_data)
-    reply_keyboard = [[BotButton.main_menu]]
+
     text = BotMessage.enter_name
-    bot.send_message(chat_id=chat_id, text=text,
-                     reply_markup=
-                     ReplyKeyboardMarkup(
-                         reply_keyboard,
-                         one_time_keyboard=True))
+    bot.send_message(chat_id=chat_id, text=text)
     return 2
 
 
