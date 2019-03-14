@@ -241,7 +241,7 @@ def save_cash_account(bot, update, user_data):
 
 
 def create_account_final(bot, update, user_data):
-    starter_checker(bot, update, user_data)
+
     message = _get_message(update)
     if message == BotButton.main_menu:
         return start(bot, update, user_data)
