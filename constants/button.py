@@ -1,4 +1,7 @@
 class BotButton:
+    add_description = "اضافه کردن یادداشت"
+    edit_transaction_type = "تغییر دسته بندی"
+    yes_set = "این هزینه رو ثبت کن"
     gifts_and_rewards = "هدیه و پاداش"
     profitable_investment = "سود سرمایه گذاری"
     sell = "فروش"

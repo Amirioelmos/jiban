@@ -4,22 +4,19 @@ from bot import *
 from constants.button import BotButton
 
 
-common_handler = RegexHandler(pattern=".*", callback=start)
+common_handler = RegexHandler(pattern=".*", callback=start, pass_user_data=True)
 def handlers_manager(dp):
-    # dp.add_handler(CommandHandler("start", start))
-    # dp.add_handler(CommandHandler("help", echo))
-    # dp.add_handler(MessageHandler(Filters.text, echo))
     dp.add_error_handler(error)
     conv_handler = ConversationHandler(
         entry_points=[
-            CommandHandler('start', start),
-            RegexHandler(pattern=".*", callback=start)
+            CommandHandler('start', start,  pass_user_data=True),
+            RegexHandler(pattern=".*", callback=start, pass_user_data=True)
         ],
 
         states={
-            1: [RegexHandler("^{}$".format(BotButton.starter), get_name), common_handler],
+            1: [RegexHandler("^{}$".format(BotButton.starter), get_name, pass_user_data=True), common_handler],
             2: [
-                MessageHandler(Filters.text, take_name), common_handler],
+                MessageHandler(Filters.text, callback=take_name, pass_user_data=True), common_handler],
             3: [
                 MessageHandler(Filters.text, callback=choose_service, pass_user_data=True),
                 common_handler
@@ -133,6 +130,16 @@ def handlers_manager(dp):
                 MessageHandler(Filters.text, callback=take_receive_account, pass_user_data=True),
                 common_handler
             ],
+            25: [
+                MessageHandler(Filters.text, callback=auto_understand_sapta, pass_user_data=True),
+                common_handler
+            ],
+            26: [
+                RegexHandler(pattern="^{}$".format(BotButton.yes_set),
+                             callback=set_transaction_from_sapta,
+                             pass_user_data=True),
+                common_handler
+            ],
             # PHOTO: [MessageHandler(Filters.photo, photo),
             #         CommandHandler('skip', skip_photo)],
             #
@@ -140,7 +147,7 @@ def handlers_manager(dp):
             #            CommandHandler('skip', skip_location)],
             #
             # BIO: [MessageHandler(Filters.text, bio)]
-            0: [RegexHandler(".*", start)],
+            0: [RegexHandler(".*", start, pass_user_data=True)],
 
         },
 

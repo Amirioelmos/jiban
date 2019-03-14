@@ -23,6 +23,15 @@ def _formatter(_id):
         return _id
 
 class UserData:
+    account = "account"
+    account_number = "account_number"
+    sapta_ie_type = "sapta_ie_type"
+    spata_date = "spata_date"
+    spata_account_number = "spata_account_number"
+    spata_remain = "spata_remain"
+    spata_transaction_amount = "spata_transaction_amount"
+    spata_transaction_type = "spata_transaction_type"
+    sapta_message = "sapta_message"
     receive_date_account = "receive_date_account"
     receive_date = "receive_date"
     receive_amount = "receive_amount"

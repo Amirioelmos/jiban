@@ -1,9 +1,26 @@
 
 
 class BotMessage:
+    sapta_message_format = """*{name}* عزیز،
+*#{ie_type}* 
+از دسته بندی: {transaction_type}
+به مبلغ: {amount}
+از حساب: {account_number}
+در: {date}
+میتونه به عنوان دخل و خرج جدید ثبت بشه.
+#تشخیص_خودکار
+"""
+    get_me_spata_message = "پیام ساپتا یا رسید تراکنش را برای من فوروارد کن:"
     enter_amount_of_receive = "میزان *مبلغ دریافتی* رو به ریال وارد کن:"
     cost_saved = " *{name}*  عزیز، هزینه از دسته بندی  *{cost_type}* به مبلغ *{amount}* با موفقیت ثبت شد."
     receive_saved = " *{name}*   عزیز، دریافتی از دسته بندی *{receive_type}* به مبلغ *{amount}* با موفقیت ثبت شد."
+
+    sapta_saved = """{name} عزیز،
+#{ie_type}
+از دسته بندی: *{transaction_type}*
+به مبلغ: *{amount} ریال*
+در حساب: #{account_number}
+با موفقیت ثبت شد."""
     enter_account_of_cost = "لطفا حساب مبدا رو از لیست انتخاب کن:"
     enter_date_of_cost = "لطفا *تاریخ*  این هزینه رو مشخص کن:" \
                          "مثال:۹۷۱۲۱۳"
@@ -43,5 +60,7 @@ class BotMessage:
 
 class MiniText:
 
+    user = "کاربر"
+    bank_melli = "بانک ملّی ایران"
     cash = "حساب نقدی"
     banki = "حساب بانکی"

@@ -11,11 +11,11 @@ class IncomeAndExpenses(Base):
     account_id = Column(Integer)
     account_type = Column(String)
     chat_id = Column(Integer)
-    type = Column(String)
+    type = Column(String) # category example family
     amount = Column(Integer)
     description = Column(String)
     date = Column(DateTime)
-    kind = Column(String)  #
+    kind = Column(String)  # cost, receive
 
     def __init__(self, chat_id, account_id, account_type, type, kind ,amount):
         self.chat_id = chat_id

@@ -22,7 +22,11 @@ updater = Updater(token=JibanConfig.bot_token,
 dp = updater.dispatcher
 
 
-def start(bot, update):
+def start(bot, update, user_data):
+    message = _get_message(update)
+    if str(message).__contains__(MiniText.bank_melli):
+        user_data[UserData.sapta_message] = message
+        return auto_understand_sapta(bot, update, user_data)
     chat_id = _get_chat_id(update)
     is_valid_user = is_user(chat_id)
     if is_valid_user:
@@ -52,15 +56,22 @@ def start(bot, update):
         return 1
 
 
-def get_name(bot, update):
+def get_name(bot, update, user_data):
     chat_id = _get_chat_id(update)
+    starter_checker(bot, update, user_data)
+    reply_keyboard = [[BotButton.main_menu]]
     text = BotMessage.enter_name
-    bot.send_message(chat_id=chat_id, text=text)
+    bot.send_message(chat_id=chat_id, text=text,
+            reply_markup=
+            ReplyKeyboardMarkup(
+                reply_keyboard,
+                one_time_keyboard=True))
     return 2
 
 
-def take_name(bot, update):
+def take_name(bot, update, user_data):
     chat_id = _get_chat_id(update)
+    starter_checker(bot, update, user_data)
     name = _get_message(update)
     update_user(chat_id, name)
     reply_keyboard = [[BotButton.account, BotButton.cash]]
@@ -78,6 +89,7 @@ def take_name(bot, update):
 def new_account(bot, update, user_data):
     chat_id = _get_chat_id(update)
     name = get_user_name(chat_id)
+    starter_checker(bot, update, user_data)
     reply_keyboard = [[BotButton.account, BotButton.cash]]
     is_user_payed = check_payed_user(chat_id)
     number_of_account_for_user = number_of_account(chat_id)
@@ -117,6 +129,7 @@ def new_account(bot, update, user_data):
 
 
 def pay_full_bot(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     bot.send_invoice(chat_id=chat_id,
                      title=BotMessage.invoice_text,
@@ -134,6 +147,7 @@ def pay_full_bot(bot, update, user_data):
 
 
 def pay_full_done(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     successful_payment = update.message.successful_payment
     jiban_logger.info("SuccessfulPayment with payload: %s", successful_payment.invoice_payload)
@@ -154,6 +168,7 @@ def pay_full_done(bot, update, user_data):
 
 
 def choose_service(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     jiban_logger.info("\n\nchoose_service\n\n")
     message = _get_message(update)
     reply_keyboard = [[BotButton.main_menu]]
@@ -182,6 +197,7 @@ def choose_service(bot, update, user_data):
 
 
 def take_cash_name(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     jiban_logger.info("\n\ntake_cash_name\n\n")
     message = _get_message(update)
     if message == BotButton.main_menu:
@@ -195,6 +211,7 @@ def take_cash_name(bot, update, user_data):
 
 
 def take_cash_amount(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     jiban_logger.info("\n\ntake_cash_amount\n\n")
     name = user_data[UserData.cash_name]
     amount = _get_message(update)
@@ -213,6 +230,7 @@ def take_cash_amount(bot, update, user_data):
 
 
 def save_cash_account(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     name = user_data[UserData.cash_name]
     amount = user_data[UserData.cash_amount]
     chat_id = _get_chat_id(update)
@@ -228,27 +246,18 @@ def save_cash_account(bot, update, user_data):
 
 
 def create_account_final(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     message = _get_message(update)
     if message == BotButton.main_menu:
-        return start(bot, update)
+        return start(bot, update, user_data)
     if message == BotButton.new_account:
         return new_account(bot, update, user_data)
 
-# def take_cash_account_text(bot, update, user_data):
-#     message = _get_message(update)
-#     user_data['cash_account_name'] = message
-#     text = BotMessage.enter_amount_of_cash
-#     bot.send_message(
-#         chat_id=_get_chat_id(update),
-#         text=text)
-#     return take_cash_amount(bot, update, user_data)
-#
-#
-# def take_cash_amount(bot, update, user_data):
-#     update.message.reply_text('Help!')
+
 
 
 def take_bank_name_for_account(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     message = _get_message(update)
     user_data[UserData.bank_name] = message
@@ -263,9 +272,9 @@ def take_bank_name_for_account(bot, update, user_data):
 
 
 def take_remain_of_bank_account(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     message = _get_message(update)
     chat_id = _get_chat_id(update)
-    starter_checker(bot, update)
     user_data[UserData.bank_account_remain] = message
     text = BotMessage.enter_cart_number_of_bank_account
     reply_keyboard = [[BotButton.main_menu]]
@@ -278,9 +287,10 @@ def take_remain_of_bank_account(bot, update, user_data):
 
 
 def take_cart_number_of_bank_account(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     message = _get_message(update)
     chat_id = _get_chat_id(update)
-    starter_checker(bot, update)
+
     user_data[UserData.back_account_cart_number] = message
     bank_name = user_data[UserData.bank_name]
     remain = user_data[UserData.bank_account_remain]
@@ -304,9 +314,9 @@ def take_cart_number_of_bank_account(bot, update, user_data):
 
 
 def save_bank_account(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     message = _get_message(update)
     chat_id = _get_chat_id(update)
-    starter_checker(bot, update)
     bank_name = user_data[UserData.bank_name]
     remain = user_data[UserData.bank_account_remain]
     cart_number = user_data[UserData.back_account_cart_number]
@@ -329,6 +339,7 @@ def save_bank_account(bot, update, user_data):
 
 
 def get_account_number_of_bank_account(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     text = BotMessage.enter_account_number
     chat_id = _get_chat_id(update)
     reply_keyboard = [[BotButton.main_menu]]
@@ -341,6 +352,7 @@ def get_account_number_of_bank_account(bot, update, user_data):
 
 
 def take_account_number_of_bank_account(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     message = _get_message(update)
     user_data[UserData.back_account_account_number] = message
@@ -366,6 +378,7 @@ def take_account_number_of_bank_account(bot, update, user_data):
 
 
 def new_income_and_expenses(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     name = get_user_name(chat_id)
     text = BotMessage.new_cost.format(name=name)
@@ -384,6 +397,7 @@ def new_income_and_expenses(bot, update, user_data):
 
 
 def new_cost(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     text = BotMessage.choose_cost_category
     reply_keyboard = [[
@@ -401,6 +415,7 @@ def new_cost(bot, update, user_data):
 
 
 def take_cost_type(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     message = _get_message(update)
     user_data[UserData.cost_type] = message
@@ -410,6 +425,7 @@ def take_cost_type(bot, update, user_data):
 
 
 def take_cost_amount(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     message = _get_message(update)
     user_data[UserData.cost_amount] = message
@@ -419,6 +435,7 @@ def take_cost_amount(bot, update, user_data):
 
 
 def take_cost_date(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     message = _get_message(update)
     user_data[UserData.cost_date] = message
@@ -445,6 +462,7 @@ def take_cost_date(bot, update, user_data):
 
 def take_cost_account(bot, update, user_data):
     chat_id = _get_chat_id(update)
+    starter_checker(bot, update, user_data)
     account_info = _get_message(update).split(" ")
     account_id = account_info[0]
     account = user_data[UserData.all_accounts][int(account_id)]
@@ -472,6 +490,7 @@ def take_cost_account(bot, update, user_data):
 
 
 def new_receive(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     text = BotMessage.choose_cost_category
     reply_keyboard = [[
@@ -489,6 +508,7 @@ def new_receive(bot, update, user_data):
 
 
 def take_receive_type(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     message = _get_message(update)
     user_data[UserData.receive_type] = message
@@ -498,6 +518,7 @@ def take_receive_type(bot, update, user_data):
 
 
 def take_receive_amount(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     message = _get_message(update)
     user_data[UserData.receive_amount] = message
@@ -507,6 +528,7 @@ def take_receive_amount(bot, update, user_data):
 
 
 def take_receive_date(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     message = _get_message(update)
     user_data[UserData.receive_date] = message
@@ -530,7 +552,9 @@ def take_receive_date(bot, update, user_data):
                          one_time_keyboard=True))
     return 24
 
+
 def take_receive_account(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     account_info = _get_message(update).split(" ")
     account_id = account_info[0]
@@ -558,22 +582,145 @@ def take_receive_account(bot, update, user_data):
     return 0
 
 
-
 def new_p2p(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     name = get_user_name(chat_id)
     bot.send_message(text="new_p2p {}".format(name), chat_id=chat_id)
 
 
 def new_auto_understand_transactions(bot, update, user_data):
+    starter_checker(bot, update, user_data)
     chat_id = _get_chat_id(update)
     name = get_user_name(chat_id)
-    bot.send_message(text="new_auto_understand_transactions {}".format(name), chat_id=chat_id)
+    reply_keyboard = [[BotButton.main_menu]]
+    text = BotMessage.get_me_spata_message
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 25
 
-def starter_checker(bot, update):
+
+def auto_understand_sapta(bot, update, user_data):
+    starter_checker(bot, update, user_data)
+    chat_id = _get_chat_id(update)
+    name = get_user_name(chat_id)
+    if name is None:
+        name = MiniText.user
+    message = user_data[UserData.sapta_message]
+    message_info = str(message).split("\n")
+    transaction_type = message_info[1]
+    transaction_amount = message_info[2]
+    remain = message_info[3]
+    account_number = message_info[4]
+    date = message_info[5]
+    ie_type = ""
+    if transaction_amount.__contains__("-"):
+        ie_type = BotButton.cost
+    else:
+        ie_type = BotButton.receive
+    user_data[UserData.sapta_ie_type] = ie_type
+    jiban_logger.info("{}, \n\n{}, \n\n{}, {}, {},".format(
+        transaction_type,
+        transaction_amount,
+        remain,
+        account_number,
+        date
+    ))
+    account_number_1 = account_number.split("*")[1]
+    amount_1 = transaction_amount.split("*")[1]
+    jiban_logger.info("Amount : {}".format(amount_1))
+    account_number_1 = persian.convert_ar_numbers(account_number_1).replace("#", "")
+    amount_1 = persian.convert_ar_numbers(amount_1).replace("-", "").replace("+", "").replace(",", "")
+    user_data[UserData.spata_transaction_type] = transaction_type
+    user_data[UserData.spata_remain] = remain
+    user_data[UserData.spata_date] = date
+    reply_keyboard = [[
+        BotButton.yes_set,
+        BotButton.edit_transaction_type,
+        BotButton.add_description,
+        BotButton.main_menu]
+    ]
+    text = BotMessage.sapta_message_format.format(
+        name=name,
+        ie_type=ie_type,
+        transaction_type=transaction_type,
+        account_number=account_number,
+        date=date,
+        amount=transaction_amount
+    )
+    user_data[UserData.spata_transaction_amount] = int(amount_1)
+    user_data[UserData.spata_account_number] = int(account_number_1)
+
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 26
+
+
+def set_transaction_from_sapta(bot, update, user_data):
+    starter_checker(bot, update, user_data)
+    chat_id = _get_chat_id(update)
+    sapta_account_number = user_data[UserData.spata_account_number]
+    all_account = get_accounts_of_user(chat_id)
+    account_flag = False
+    for account in all_account:
+        if isinstance(account, BankAccount):
+            if account.account_number:
+                jiban_logger.info("Account : {}".format(account.account_number))
+                if int(account.account_number) == int(sapta_account_number):
+                    user_data[UserData.account] = account
+                    account_flag = True
+
+    if account_flag:
+        return send_sapta_done(bot, update, user_data)
+    else:
+        return get_name(bot, update)
+
+
+def send_sapta_done(bot, update, user_data):
+    starter_checker(bot, update, user_data)
+    chat_id = _get_chat_id(update)
+    name = get_user_name(chat_id)
+    jiban_logger.info("User Data : {}".format(user_data))
+    transaction_type = user_data[UserData.spata_transaction_type].replace("#", "").replace("*", "")
+    transaction_amount = user_data[UserData.spata_transaction_amount]
+    sapta_ie_type = user_data[UserData.sapta_ie_type]
+    sapta_account_number = user_data[UserData.spata_account_number]
+    kind = None
+    if sapta_ie_type == BotButton.cost:
+        kind = IEText.deposit
+    else:
+        kind = IEText.withdraw
+    account = user_data[UserData.account]
+    add_income_and_expenses(chat_id=chat_id,
+                            account=account,
+                            type=transaction_type,
+                            kind=kind,
+                            amount=transaction_amount)
+    text = BotMessage.sapta_saved.format(
+        name=name,
+        ie_type=sapta_ie_type,
+        transaction_type=transaction_type,
+        account_number=persian.convert_en_numbers(sapta_account_number),
+        amount=_formatter(int(transaction_amount)),
+    )
+    reply_keyboard = [[BotButton.main_menu]]
+    bot.send_message(chat_id=chat_id,
+                     text=text,
+                     reply_markup=ReplyKeyboardMarkup(
+                         reply_keyboard,
+                         one_time_keyboard=True))
+    return 0
+
+def starter_checker(bot, update, user_data):
     message = _get_message(update)
     if message == BotButton.main_menu:
-        return start(bot, update)
+        return start(bot, update, user_data)
 
 
 def help_me(bot, update, user_data):
